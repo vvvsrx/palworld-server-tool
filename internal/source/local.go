@@ -60,6 +60,11 @@ func findLevelFile(savePath string) (string, error) {
 	var foundPath string
 	err := filepath.Walk(savePath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
+			if os.IsPermission(err) {
+				// Log permission denied but continue walking the directory.
+				logger.Info("Permission denied accessing: ", path)
+				return nil
+			}
 			return err
 		}
 		if info.Name() == "Level.sav" {
